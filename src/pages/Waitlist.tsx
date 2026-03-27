@@ -29,16 +29,28 @@ const Waitlist = () => {
 
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitted(true);
-    setIsLoading(false);
-    
-    toast({
-      title: "Welcome to the Guild!",
-      description: "Your name has been inscribed in the ancient tome. We shall summon you when the time comes.",
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke('submit-waitlist', {
+        body: { name, email, level },
+      });
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      toast({
+        title: "Welcome to the Guild!",
+        description: "Your name has been inscribed in the ancient tome. We shall summon you when the time comes.",
+      });
+    } catch (error) {
+      console.error("Waitlist submission error:", error);
+      toast({
+        title: "Spell Failed!",
+        description: "The inscription spell encountered an error. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isSubmitted) {
