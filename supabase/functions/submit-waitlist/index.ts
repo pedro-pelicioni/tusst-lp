@@ -91,10 +91,13 @@ serve(async (req) => {
       throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON is not configured");
     }
 
-    const sheetId = Deno.env.get("GOOGLE_SHEET_ID");
-    if (!sheetId) {
+    const sheetIdRaw = Deno.env.get("GOOGLE_SHEET_ID");
+    if (!sheetIdRaw) {
       throw new Error("GOOGLE_SHEET_ID is not configured");
     }
+    // Extract spreadsheet ID if a full URL was provided
+    const match = sheetIdRaw.match(/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    const sheetId = match ? match[1] : sheetIdRaw;
 
     const serviceAccount = JSON.parse(serviceAccountJson);
     const accessToken = await getAccessToken(serviceAccount);
