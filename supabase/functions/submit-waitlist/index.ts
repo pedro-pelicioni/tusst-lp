@@ -105,7 +105,7 @@ serve(async (req) => {
     const timestamp = new Date().toISOString();
     const values = [[name, email, level, timestamp]];
 
-    const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A:D:append?valueInputOption=USER_ENTERED`;
+    const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Página1!A:D:append?valueInputOption=USER_ENTERED`;
 
     const sheetsResponse = await fetch(sheetsUrl, {
       method: "POST",
