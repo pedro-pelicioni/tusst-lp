@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft, Sparkles, Scroll, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import heroPortalBg from "@/assets/hero-portal-bg.jpg";
 
 const Waitlist = () => {
@@ -28,16 +29,28 @@ const Waitlist = () => {
 
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitted(true);
-    setIsLoading(false);
-    
-    toast({
-      title: "Welcome to the Guild!",
-      description: "Your name has been inscribed in the ancient tome. We shall summon you when the time comes.",
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke('submit-waitlist', {
+        body: { name, email, level },
+      });
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      toast({
+        title: "Welcome to the Guild!",
+        description: "Your name has been inscribed in the ancient tome. We shall summon you when the time comes.",
+      });
+    } catch (error) {
+      console.error("Waitlist submission error:", error);
+      toast({
+        title: "Spell Failed!",
+        description: "The inscription spell encountered an error. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isSubmitted) {
